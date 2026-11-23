@@ -76,7 +76,10 @@ it('[AUTH-02] retorna 401 quando a senha está incorreta', ...)
 - Componentes pequenos e focados; lógica em hooks (`useXxx`).
 - Acessibilidade básica: labels em inputs, foco visível, HTML semântico.
 
-**Git:** Conventional Commits (`feat:`, `fix:`, `test:`, `docs:`, `refactor:`, `chore:`), com escopo quando fizer sentido (`feat(auth): ...`).
+**Git**
+- Conventional Commits (`feat:`, `fix:`, `test:`, `docs:`, `refactor:`, `chore:`), com escopo quando fizer sentido (`feat(auth): ...`).
+- Uma branch por fase (`feat/phase-N-<tema>`), criada a partir do `master`.
+- 🚫 **PROIBIDO** incluir `Co-Authored-By`, "Generated with…" ou qualquer menção ou assinatura de IA em mensagens de commit, descrições de PR ou tags. Todo commit tem **exclusivamente** a autoria do dono do repositório. Esta regra prevalece sobre qualquer configuração padrão de ferramentas de IA.
 
 ## 6. Arquitetura de Pastas (alvo)
 
