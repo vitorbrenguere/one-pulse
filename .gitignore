@@ -14,7 +14,13 @@ coverage/
 .DS_Store
 Thumbs.db
 
+# Configurações locais do Claude Code (por máquina)
+.claude/settings.local.json
+
 # Editor
 .vscode/*
 !.vscode/extensions.json
 .idea/
+
+# Artefatos de ferramentas de teste
+.vitest/

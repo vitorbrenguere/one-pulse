@@ -1,0 +1,62 @@
+import { randomBytes } from 'node:crypto';
+import bcrypt from 'bcrypt';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import express, { type Express } from 'express';
+import type { Pool } from 'mysql2/promise';
+import type { Env } from './config/env.js';
+import { createAuthController } from './modules/auth/auth.controller.js';
+import { createAuthRouter } from './modules/auth/auth.routes.js';
+import { createAuthService } from './modules/auth/auth.service.js';
+import { createBcryptPasswordHasher } from './modules/auth/password-hasher.js';
+import { createRequireAuth } from './modules/auth/require-auth.middleware.js';
+import { createJwtTokenService } from './modules/auth/token-service.js';
+import { createUsersRepository } from './modules/users/users.repository.js';
+import { createErrorHandler, notFoundHandler } from './shared/middlewares/error-handler.js';
+
+export interface AppDependencies {
+  env: Env;
+  pool: Pool;
+}
+
+/**
+ * Composition root: monta as dependências e o app Express SEM chamar `listen`,
+ * para que os testes usem o Supertest e injetem dependências (ex.: um pool quebrado no AUTH-27).
+ */
+export function createApp({ env, pool }: AppDependencies): Express {
+  const app = express();
+  app.disable('x-powered-by');
+
+  // ---- Middlewares globais ----
+  app.use(cors({ origin: env.CORS_ORIGIN, credentials: true }));
+  // strict: false aceita qualquer JSON válido (ex.: "texto"); o Zod decide se o formato serve.
+  app.use(express.json({ strict: false, limit: '100kb' }));
+  app.use(cookieParser());
+
+  // ---- Dependências ----
+  const usersRepository = createUsersRepository(pool);
+  const passwordHasher = createBcryptPasswordHasher(env.BCRYPT_ROUNDS);
+  const tokenService = createJwtTokenService({ secret: env.JWT_SECRET, expiresInSeconds: env.JWT_EXPIRES_IN_SECONDS });
+  const authService = createAuthService({
+    usersRepository,
+    passwordHasher,
+    tokenService,
+    // Mesmo custo do hash real, para o timing attack do AUTH-15 não ter diferença a explorar.
+    dummyPasswordHash: bcrypt.hashSync(randomBytes(32).toString('hex'), env.BCRYPT_ROUNDS),
+  });
+
+  // ---- Rotas ----
+  app.use(
+    '/api/v1/auth',
+    createAuthRouter({
+      controller: createAuthController({ authService, env }),
+      requireAuth: createRequireAuth({ authService, tokenService }),
+    }),
+  );
+
+  // ---- Fallbacks ----
+  app.use(notFoundHandler);
+  app.use(createErrorHandler({ logUnexpected: env.NODE_ENV !== 'test' }));
+
+  return app;
+}

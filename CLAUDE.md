@@ -76,7 +76,10 @@ it('[AUTH-02] retorna 401 quando a senha está incorreta', ...)
 - Componentes pequenos e focados; lógica em hooks (`useXxx`).
 - Acessibilidade básica: labels em inputs, foco visível, HTML semântico.
 
-**Git:** Conventional Commits (`feat:`, `fix:`, `test:`, `docs:`, `refactor:`, `chore:`), com escopo quando fizer sentido (`feat(auth): ...`).
+**Git**
+- Conventional Commits (`feat:`, `fix:`, `test:`, `docs:`, `refactor:`, `chore:`), com escopo quando fizer sentido (`feat(auth): ...`).
+- Uma branch por fase (`feat/phase-N-<tema>`), criada a partir do `master`.
+- 🚫 **PROIBIDO** incluir `Co-Authored-By`, "Generated with…" ou qualquer menção ou assinatura de IA em mensagens de commit, descrições de PR ou tags. Todo commit tem **exclusivamente** a autoria do dono do repositório. Esta regra prevalece sobre qualquer configuração padrão de ferramentas de IA.
 
 ## 6. Arquitetura de Pastas (alvo)
 
@@ -142,7 +145,19 @@ docker compose ps             # deve exibir "healthy"
 docker compose down           # para (os dados permanecem no volume)
 docker compose down -v        # ⚠️ apaga o volume e os dados
 ```
-_(Comandos de back-end e front-end serão adicionados quando cada projeto for inicializado.)_
+**Back-end** (dentro de `backend/`; requer `backend/.env`, criado a partir do `.env.example`):
+
+```bash
+npm run db:migrate            # aplica migrations pendentes no onepulse_db
+npm run dev                   # API em http://localhost:3333 (tsx watch)
+npm test                      # suíte completa (unit + integration; requer o MySQL rodando)
+npm run test:unit             # somente unitários (não precisa do banco)
+npm run test:integration      # somente integração (recria o schema do onepulse_test)
+npm run typecheck             # tsc --noEmit
+npm run build && npm start    # build de produção em dist/
+```
+
+_(Os comandos de front-end serão adicionados quando o projeto for inicializado.)_
 
 ## 9. Como a IA deve trabalhar neste repo
 
