@@ -3,7 +3,7 @@
 | Campo | Valor |
 |---|---|
 | Status | ✅ Aprovada |
-| Versão | 1.0.0 |
+| Versão | 1.1.0 (nota 3.5: limites de `CHECK` no MySQL) |
 | Data | 2026-11-22 |
 | Escopo | Visão de produto, papéis (RBAC), modelo de dados |
 
@@ -155,7 +155,7 @@ erDiagram
 | `updated_at` | `DATETIME` | `NOT NULL`, default `CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP` | UTC |
 
 Índices: `UNIQUE(email)`, `INDEX(manager_id)`.
-Restrição: `CHECK (manager_id IS NULL OR manager_id <> id)`, ninguém é gestor de si mesmo.
+Regra **USR-INV-01:** ninguém é gestor de si mesmo (`manager_id <> id`). Validada no **service/seed**, não por `CHECK` (veja a nota 3.5).
 
 ### 3.3 Tabela `pd_goals` (metas de PDI)
 
@@ -201,10 +201,19 @@ Restrição: `CHECK (manager_id IS NULL OR manager_id <> id)`, ninguém é gesto
 Índices: `UNIQUE(evaluatee_id, cycle, type)`, `INDEX(evaluator_id)`.
 
 **Regras de negócio:**
-- **EVAL-INV-01:** `type = AUTOAVALIACAO` ⇒ `evaluator_id = evaluatee_id`. Também reforçado no banco via `CHECK ((type = 'AUTOAVALIACAO') = (evaluator_id = evaluatee_id))`.
+- **EVAL-INV-01:** `type = AUTOAVALIACAO` ⇒ `evaluator_id = evaluatee_id`. Validada no **service** (veja a nota 3.5).
 - **EVAL-INV-02:** `type = GESTOR` ⇒ o avaliador é o `manager_id` do avaliado **no momento da criação**.
 - **EVAL-INV-03:** só há uma avaliação de cada tipo por pessoa por ciclo (garantido pelo `UNIQUE`; violação → `409 CONFLICT`).
 - **EVAL-INV-04:** submeter exige `score` preenchido; após `SUBMETIDA` a avaliação é imutável.
+
+### 3.5 Nota: limites de `CHECK` no MySQL 8 (adicionada na v1.1.0)
+
+Validado contra o MySQL 8.0.46 em 2026-11-22:
+
+- **ERROR 3818:** um `CHECK` não pode referenciar uma coluna `AUTO_INCREMENT`. Isso inviabiliza `manager_id <> id`.
+- **ERROR 3823:** um `CHECK` não pode usar uma coluna que participa de FK com ação referencial (`CASCADE`, `SET NULL`). Isso inviabiliza a EVAL-INV-01 sobre `evaluatee_id`.
+
+**Decisão:** `CHECK` no banco apenas sobre colunas simples (`progress`, `score`). Invariantes que relacionam IDs ficam no service, com testes unitários dedicados. Os `CHECK`s de `progress` e `score` continuam valendo.
 
 ---
 
