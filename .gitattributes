@@ -1,0 +1,7 @@
+# Normaliza finais de linha para LF no repositório e no checkout.
+# Crítico para scripts .sh executados dentro de containers Linux (CRLF quebra o shebang).
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.ico binary

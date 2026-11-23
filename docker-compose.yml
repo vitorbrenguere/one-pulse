@@ -21,6 +21,8 @@ services:
       - "${MYSQL_PORT:-3306}:3306"
     volumes:
       - onepulse_db_data:/var/lib/mysql
+      # Scripts de inicialização (rodam só com volume vazio): cria o onepulse_test.
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
       # Usa TCP (127.0.0.1) em vez do socket: durante a inicialização o MySQL
       # sobe um servidor temporário sem rede, e o ping via socket retornaria
