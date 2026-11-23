@@ -1,0 +1,36 @@
+# OnePulse — infraestrutura local de desenvolvimento.
+# Uso:  cp .env.example .env  &&  docker compose up -d
+# Status do healthcheck:  docker compose ps
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: onepulse_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Defina MYSQL_ROOT_PASSWORD no .env}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-onepulse_db}
+      MYSQL_USER: ${MYSQL_USER:-onepulse}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Defina MYSQL_PASSWORD no .env}
+      TZ: UTC
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_0900_ai_ci
+      - --default-time-zone=+00:00
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - onepulse_db_data:/var/lib/mysql
+    healthcheck:
+      # Usa TCP (127.0.0.1) em vez do socket: durante a inicialização o MySQL
+      # sobe um servidor temporário sem rede, e o ping via socket retornaria
+      # "healthy" antes do banco estar pronto de verdade.
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+volumes:
+  onepulse_db_data:
+    name: onepulse_db_data
