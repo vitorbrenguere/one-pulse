@@ -32,3 +32,11 @@ export interface NewUser {
   email: string;
   passwordHash: string;
 }
+
+/** Porta de persistência de usuários (implementada em users.repository.ts). */
+export interface UsersRepository {
+  findByEmail(email: string): Promise<UserRecord | null>;
+  findById(id: number): Promise<UserRecord | null>;
+  /** Lança DuplicateEmailError se o e-mail já existir. */
+  create(data: NewUser): Promise<UserRecord>;
+}
