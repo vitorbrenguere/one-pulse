@@ -3,7 +3,7 @@
 | Campo | Valor |
 |---|---|
 | Status | ✅ Aprovada (v1.0.0) |
-| Versão | 1.0.0 |
+| Versão | 1.0.1 (correção: exemplo de senha com 7 caracteres no AUTH-05) |
 | Data | 2026-11-22 |
 | Depende de | [`00-architecture.spec.md`](00-architecture.spec.md) (tabela `users`, RBAC-01..04, ADR-03) |
 | Branch | `feat/phase-1-auth` |
@@ -170,7 +170,7 @@ Set-Cookie: onepulse_token=; Max-Age=0; Path=/; HttpOnly; SameSite=Lax
 |---|---|---|
 | `name` | ausente · `""` · `" a "` · 121 caracteres | obrigatório, mínimo de 2 após trim, máximo de 120 |
 | `email` | ausente · `"ana"` · `"ana@"` · 256 caracteres | formato e tamanho |
-| `password` | ausente · `"abc12"` (7) · `"abcdefgh"` (sem número) · `"12345678"` (sem letra) · 73 caracteres | política de senha e limite do bcrypt |
+| `password` | ausente · `"abc1234"` (7) · `"abcdefgh"` (sem número) · `"12345678"` (sem letra) · 73 caracteres | política de senha e limite do bcrypt |
 | corpo | `{}` · `[]` · `"texto"` | não é objeto ou está vazio |
 
 ### 5.2 Login: `POST /auth/login`
