@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |---|---|
-| Status | ✅ Aprovada (v1.0.0) |
+| Status | 🏁 Concluída: AUTH-01..28 cobertos por 101 testes verdes (2026-11-22) |
 | Versão | 1.0.1 (correção: exemplo de senha com 7 caracteres no AUTH-05) |
 | Data | 2026-11-22 |
 | Depende de | [`00-architecture.spec.md`](00-architecture.spec.md) (tabela `users`, RBAC-01..04, ADR-03) |
