@@ -1,0 +1,28 @@
+{
+  // Config única: usada pelo editor, pelo `npm run typecheck` e pelo build (o Vite só transpila).
+  "compilerOptions": {
+    "target": "es2023",
+    "lib": ["es2023", "dom", "dom.iterable"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "types": ["vite/client", "node", "@testing-library/jest-dom/vitest"],
+
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "exactOptionalPropertyTypes": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+
+    "noEmit": true
+  },
+  "include": ["src", "vite.config.ts", "eslint.config.js"]
+}
