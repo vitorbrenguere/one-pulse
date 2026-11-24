@@ -2,8 +2,8 @@
 
 | Campo | Valor |
 |---|---|
-| Status | ✅ Aprovada (v1.0.0) |
-| Versão | 1.0.0 |
+| Status | ✅ Aprovada (v1.0.0) · v1.0.1 aguardando validação |
+| Versão | 1.0.1 (§6.6: textos e estrutura acessível fixados pelos testes; §10: helper `goals-store.ts`) |
 | Data | 2026-11-24 |
 | Depende de | [`00-architecture.spec.md`](00-architecture.spec.md) v1.3.0 · [`01-auth.spec.md`](01-auth.spec.md) · [`02-users.spec.md`](02-users.spec.md) · [`03-pd-goals.spec.md`](03-pd-goals.spec.md) · [`04-evaluations.spec.md`](04-evaluations.spec.md) |
 | Branch | `feat/phase-5-frontend` |
@@ -319,6 +319,24 @@ O papel do viewer é derivado no cliente: `evaluation.userId === me.id` → aval
 - `CONCLUIDA` → as duas partes lado a lado (empilhadas no mobile), somente leitura.
 - `409 EVALUATION_LOCKED` / `403` → `ErrorBanner` com a mensagem da API e refetch.
 
+### 6.6 Textos e estrutura acessível fixados pelos testes (v1.0.1)
+
+Os testes consultam a tela como o usuário (papel + nome acessível), então estes textos fazem parte do contrato da UI:
+
+| Tipo | Textos |
+|---|---|
+| Título `h1` | `Entrar` (login) · `Criar conta` (cadastro) · `Dashboard` · `Metas de PDI` · `Avaliações de desempenho` · nome do liderado (`/team/:userId`) · `Página não encontrada` · `Colaborador não encontrado` |
+| Regiões (`<section aria-labelledby>`) | `Meu perfil` · `Minhas metas` · `Minhas avaliações` · `Minha equipe` · `Avaliações da equipe` · em `/team/:userId`: `Metas` e `Avaliações` |
+| Labels | `Nome` · `E-mail` · `Senha` · `Cargo` · `Título` · `Descrição` · `Categoria` · `Prazo` · `Progresso (%)` · `Status` · `Filtrar por status` · `Parecer do gestor` · `Colaborador` · `Ciclo` · `Nota` (legend do `radiogroup`, opções `1`–`5`) · `Comentários` · `Feedback` |
+| Botões | `Entrar`/`Entrando…` · `Criar conta`/`Criando conta…` · `Sair` · `Menu` · `Editar perfil` · `Salvar` · `Nova meta` · `Criar meta` (ação do estado vazio) · `Nova meta para <nome>` · `Editar` · `Excluir` · `Salvar progresso` · `Salvar parecer` · `Remover parecer` · `Confirmar` · `Tentar novamente` · `Abrir avaliação` · `Preencher autoavaliação` · `Avaliar` · `Salvar rascunho` · `Enviar` |
+| Links | `Criar conta` · `Já tenho conta` · `Dashboard` · `Metas` · `Avaliações` · `Ver todas` · `Criar primeira meta` · `Voltar ao dashboard` |
+| Mensagens | `Você ainda não tem metas de PDI.` · `Nenhuma meta com este status.` · `Cargo não informado` · `Atrasada` · `Avaliação pendente` · `Seu gestor` · `Nota do gestor` · notas exibidas como `N de 5` |
+
+- Cada meta e cada avaliação é um `<article>` cujo nome acessível é o título (meta) ou o ciclo (`2º semestre de 2026`); na equipe, `<nome> · <ciclo>`.
+- O resumo de metas do dashboard usa `<dl>` (status em `<dt>`, contagem em `<dd>`) e a lista `aria-label="Metas ativas"`; o progresso é um `progressbar` com `aria-valuenow`.
+- Na avaliação, o botão de ação (`Preencher autoavaliação`/`Avaliar`) expande o formulário dentro do próprio card; o card continua expandido após o envio (é onde a revelação aparece, UI-57).
+- Uma única `<nav>`: o botão `Menu` (com `aria-expanded`) só muda a visibilidade dela no mobile.
+
 ---
 
 ## 7. Critérios de Aceite
@@ -467,8 +485,9 @@ frontend/
 ├── src/test/
 │   ├── setup.ts                           # jest-dom, MSW server (listen/resetHandlers/close)
 │   ├── server.ts                          # setupServer() + handlers padrão
-│   ├── factories.ts                       # makeUser, makeGoal, makeEvaluation, apiError()
-│   └── render.tsx                         # renderWithProviders(ui, { route, user })
+│   ├── factories.ts                       # makeUser, makeGoal, makeEvaluation; usuários G, L1, L2, C1
+│   ├── goals-store.ts                     # API de metas em memória (GET/POST/PATCH/DELETE)
+│   └── render.tsx                         # renderApp({ route, me }), currentPath, freezeDate, cenários
 ├── src/services/http.test.ts              # UI-01..04
 ├── src/lib/dates.test.ts                  # UI-05, UI-06
 ├── src/lib/labels.test.ts                 # UI-07
