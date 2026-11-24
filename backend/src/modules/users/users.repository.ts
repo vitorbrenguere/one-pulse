@@ -1,5 +1,5 @@
 import type { Pool, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
-import type { NewUser, UserRecord, UserRole, UsersRepository } from './user.types.js';
+import type { NewUser, ProfileChanges, UserRecord, UserRole, UsersRepository } from './user.types.js';
 
 /** Lançado quando o UNIQUE(email) é violado (ex.: dois cadastros simultâneos). */
 export class DuplicateEmailError extends Error {
@@ -76,5 +76,33 @@ export function createUsersRepository(pool: Pool): UsersRepository {
     return created;
   }
 
-  return { findById, findByEmail, create };
+  async function findTeamByManagerId(managerId: number): Promise<UserRecord[]> {
+    const [rows] = await pool.execute<UserRow[]>(
+      `SELECT ${USER_COLUMNS} FROM users WHERE manager_id = ? AND is_active = TRUE ORDER BY name ASC, id ASC`,
+      [managerId],
+    );
+    return rows.map(toUserRecord);
+  }
+
+  async function updateProfile(id: number, changes: ProfileChanges): Promise<UserRecord | null> {
+    // SET dinâmico, porém SEGURO: os nomes de coluna vêm desta lista fixa, nunca da entrada;
+    // os valores continuam parametrizados.
+    const assignments: string[] = [];
+    const values: Array<string | null> = [];
+    if (changes.name !== undefined) {
+      assignments.push('name = ?');
+      values.push(changes.name);
+    }
+    if (changes.jobTitle !== undefined) {
+      assignments.push('job_title = ?');
+      values.push(changes.jobTitle);
+    }
+
+    if (assignments.length > 0) {
+      await pool.execute(`UPDATE users SET ${assignments.join(', ')} WHERE id = ?`, [...values, id]);
+    }
+    return findById(id);
+  }
+
+  return { findById, findByEmail, create, findTeamByManagerId, updateProfile };
 }

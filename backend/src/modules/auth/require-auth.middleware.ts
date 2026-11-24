@@ -1,6 +1,7 @@
 import type { RequestHandler } from 'express';
 import { AUTH_COOKIE_NAME } from './auth.cookie.js';
-import { unauthenticated, type AuthService, type TokenService } from './auth.service.js';
+import { unauthenticated } from '../../shared/errors/app-error.js';
+import type { AuthService, TokenService } from './auth.service.js';
 
 /**
  * Protege rotas: aceita o token SOMENTE do cookie httpOnly (o header Authorization

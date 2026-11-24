@@ -4,6 +4,7 @@ export type ErrorCode =
   | 'INVALID_JSON'
   | 'INVALID_CREDENTIALS'
   | 'UNAUTHENTICATED'
+  | 'FORBIDDEN'
   | 'NOT_FOUND'
   | 'EMAIL_ALREADY_IN_USE'
   | 'INTERNAL_ERROR';
@@ -28,3 +29,11 @@ export class AppError extends Error {
     this.name = 'AppError';
   }
 }
+
+// ---- Fábricas de erros transversais (usadas por vários módulos) ----
+
+/** 401: sessão ausente, inválida, expirada, ou usuário inexistente/inativo (spec 01). */
+export const unauthenticated = () => new AppError(401, 'UNAUTHENTICATED', 'Autenticação necessária.');
+
+/** 403: o PAPEL não permite a AÇÃO (RBAC-02, spec 02 §2.5). */
+export const forbidden = () => new AppError(403, 'FORBIDDEN', 'Você não tem permissão para esta ação.');

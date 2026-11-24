@@ -11,7 +11,10 @@ import { createAuthService } from './modules/auth/auth.service.js';
 import { createBcryptPasswordHasher } from './modules/auth/password-hasher.js';
 import { createRequireAuth } from './modules/auth/require-auth.middleware.js';
 import { createJwtTokenService } from './modules/auth/token-service.js';
+import { createUsersController } from './modules/users/users.controller.js';
 import { createUsersRepository } from './modules/users/users.repository.js';
+import { createUsersRouter } from './modules/users/users.routes.js';
+import { createUsersService } from './modules/users/users.service.js';
 import { createErrorHandler, notFoundHandler } from './shared/middlewares/error-handler.js';
 
 export interface AppDependencies {
@@ -45,14 +48,12 @@ export function createApp({ env, pool }: AppDependencies): Express {
     dummyPasswordHash: bcrypt.hashSync(randomBytes(32).toString('hex'), env.BCRYPT_ROUNDS),
   });
 
+  const usersService = createUsersService({ usersRepository });
+  const requireAuth = createRequireAuth({ authService, tokenService });
+
   // ---- Rotas ----
-  app.use(
-    '/api/v1/auth',
-    createAuthRouter({
-      controller: createAuthController({ authService, env }),
-      requireAuth: createRequireAuth({ authService, tokenService }),
-    }),
-  );
+  app.use('/api/v1/auth', createAuthRouter({ controller: createAuthController({ authService, env }), requireAuth }));
+  app.use('/api/v1/users', createUsersRouter({ controller: createUsersController({ usersService }), requireAuth }));
 
   // ---- Fallbacks ----
   app.use(notFoundHandler);
