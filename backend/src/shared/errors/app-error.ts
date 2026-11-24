@@ -1,4 +1,4 @@
-/** Catálogo de códigos de erro (spec 01-auth §2.5). */
+/** Catálogo de códigos de erro (spec 01-auth §2.5 + spec 03 §2.9). */
 export type ErrorCode =
   | 'VALIDATION_ERROR'
   | 'INVALID_JSON'
@@ -7,6 +7,9 @@ export type ErrorCode =
   | 'FORBIDDEN'
   | 'NOT_FOUND'
   | 'EMAIL_ALREADY_IN_USE'
+  | 'INVALID_STATUS_TRANSITION'
+  | 'GOAL_LOCKED'
+  | 'GOAL_NOT_DELETABLE'
   | 'INTERNAL_ERROR';
 
 export interface ValidationDetail {
