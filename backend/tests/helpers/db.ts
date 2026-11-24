@@ -17,6 +17,8 @@ export function createTestPool(): Pool {
 
 /** Limpa os dados entre testes (o schema é criado uma vez no global-setup). */
 export async function resetDatabase(pool: Pool): Promise<void> {
+  // pd_goals primeiro: created_by é ON DELETE RESTRICT e bloquearia o DELETE FROM users.
+  await pool.query('DELETE FROM pd_goals');
   // Zera os vínculos antes de apagar, para não depender da ordem das FKs auto-referentes.
   await pool.query('UPDATE users SET manager_id = NULL');
   await pool.query('DELETE FROM users');

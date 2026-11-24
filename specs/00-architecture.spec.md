@@ -3,8 +3,8 @@
 | Campo | Valor |
 |---|---|
 | Status | ✅ Aprovada |
-| Versão | 1.1.0 (nota 3.5: limites de `CHECK` no MySQL) |
-| Data | 2026-11-22 |
+| Versão | 1.2.0 (§3.3: `target_date`, parecer do gestor e índice da listagem, via spec 03 E-01..E-03) |
+| Data | 2026-11-24 |
 | Escopo | Visão de produto, papéis (RBAC), modelo de dados |
 
 ---
@@ -117,8 +117,10 @@ erDiagram
     ENUM category
     ENUM status
     TINYINT progress
-    DATE due_date
+    DATE target_date
     DATETIME completed_at
+    TEXT manager_feedback
+    DATETIME manager_feedback_at
     DATETIME created_at
     DATETIME updated_at
   }
@@ -169,11 +171,15 @@ Regra **USR-INV-01:** ninguém é gestor de si mesmo (`manager_id <> id`). Valid
 | `category` | `ENUM('TECNICA','COMPORTAMENTAL','CARREIRA')` | `NOT NULL` | |
 | `status` | `ENUM('NAO_INICIADA','EM_ANDAMENTO','CONCLUIDA','CANCELADA')` | `NOT NULL`, default `'NAO_INICIADA'` | |
 | `progress` | `TINYINT UNSIGNED` | `NOT NULL`, default `0`, `CHECK (progress BETWEEN 0 AND 100)` | Percentual. |
-| `due_date` | `DATE` | `NULL` | |
+| `target_date` | `DATE` | `NOT NULL` | Prazo da meta (API: `targetDate`, `AAAA-MM-DD`). Renomeado de `due_date` na v1.2.0. |
 | `completed_at` | `DATETIME` | `NULL` | Preenchido quando `status = CONCLUIDA`. |
+| `manager_feedback` | `TEXT` | `NULL` | Parecer único do gestor direto (v1.2.0; não é o feedback contínuo fora do MVP). |
+| `manager_feedback_at` | `DATETIME` | `NULL` | Quando o parecer foi registrado (v1.2.0). |
 | `created_at` / `updated_at` | `DATETIME` | como em `users` | |
 
-Índices: `INDEX(user_id, status)`, `INDEX(created_by)`.
+Índices: `INDEX(user_id, status)`, `INDEX(created_by)`, `INDEX(user_id, target_date)` (ordenação da listagem, v1.2.0).
+
+Regras completas de ciclo de vida, transições e permissões: [`03-pd-goals.spec.md`](03-pd-goals.spec.md).
 
 **Regras de negócio (invariantes, validadas no service):**
 - **PDI-INV-01:** `status = CONCLUIDA` ⇔ `progress = 100` e `completed_at` preenchido.

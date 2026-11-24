@@ -1,14 +1,7 @@
 import type { Request, RequestHandler, Response } from 'express';
-import { unauthenticated } from '../../shared/errors/app-error.js';
-import type { UserDTO } from './user.types.js';
+import { viewerOf } from '../../shared/http/viewer-of.js';
 import type { UpdateProfileInput, UserIdParam } from './users.schemas.js';
 import type { UsersService } from './users.service.js';
-
-/** requireAuth sempre preenche req.user; a checagem é defensiva (fail closed). */
-function viewerOf(req: Request): UserDTO {
-  if (!req.user) throw unauthenticated();
-  return req.user;
-}
 
 /** Camada HTTP apenas: lê a requisição, delega ao service e monta a resposta. */
 export function createUsersController(deps: { usersService: UsersService }) {
