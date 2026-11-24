@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |---|---|
-| Status | ✅ Aprovada (2026-11-24) |
+| Status | 🏁 Concluída: GOAL-01..45 cobertos, 538 testes verdes na suíte completa (2026-11-24) |
 | Versão | 1.0.0 |
 | Data | 2026-11-24 |
 | Depende de | [`00-architecture.spec.md`](00-architecture.spec.md) v1.2.0 (§2 RBAC, §3.3 `pd_goals`, PDI-INV-01..04) · [`01-auth.spec.md`](01-auth.spec.md) (sessão, envelope de erro) · [`02-users.spec.md`](02-users.spec.md) (`canViewUser`, padrão de 404, `requireRole`) |
