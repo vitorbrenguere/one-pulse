@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |---|---|
-| Status | ✅ Aprovada (v1.0.0) |
+| Status | 🏁 Concluída: USER-01..33 cobertos, 206 testes verdes na suíte completa (2026-11-24) |
 | Versão | 1.0.0 |
 | Data | 2026-11-24 |
 | Depende de | [`00-architecture.spec.md`](00-architecture.spec.md) v1.1.0 (§2 RBAC, §3.2 `users`, USR-INV-01) · [`01-auth.spec.md`](01-auth.spec.md) (sessão, `requireAuth`, `UserDTO`, envelope de erro) |
