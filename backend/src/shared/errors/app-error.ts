@@ -10,6 +10,8 @@ export type ErrorCode =
   | 'INVALID_STATUS_TRANSITION'
   | 'GOAL_LOCKED'
   | 'GOAL_NOT_DELETABLE'
+  | 'EVALUATION_ALREADY_EXISTS'
+  | 'EVALUATION_LOCKED'
   | 'INTERNAL_ERROR';
 
 export interface ValidationDetail {

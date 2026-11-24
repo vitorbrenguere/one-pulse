@@ -11,6 +11,10 @@ import { createAuthService } from './modules/auth/auth.service.js';
 import { createBcryptPasswordHasher } from './modules/auth/password-hasher.js';
 import { createRequireAuth } from './modules/auth/require-auth.middleware.js';
 import { createJwtTokenService } from './modules/auth/token-service.js';
+import { createEvaluationsController } from './modules/evaluations/evaluations.controller.js';
+import { createEvaluationsRepository } from './modules/evaluations/evaluations.repository.js';
+import { createEvaluationsRouter } from './modules/evaluations/evaluations.routes.js';
+import { createEvaluationsService } from './modules/evaluations/evaluations.service.js';
 import { createPdGoalsController } from './modules/pd-goals/pd-goals.controller.js';
 import { createPdGoalsRepository } from './modules/pd-goals/pd-goals.repository.js';
 import { createPdGoalsRouter } from './modules/pd-goals/pd-goals.routes.js';
@@ -58,6 +62,11 @@ export function createApp({ env, pool }: AppDependencies): Express {
     usersRepository,
     now: () => new Date(),
   });
+  const evaluationsService = createEvaluationsService({
+    evaluationsRepository: createEvaluationsRepository(pool),
+    usersRepository,
+    now: () => new Date(),
+  });
   const requireAuth = createRequireAuth({ authService, tokenService });
 
   // ---- Rotas ----
@@ -66,6 +75,10 @@ export function createApp({ env, pool }: AppDependencies): Express {
   app.use(
     '/api/v1/pd-goals',
     createPdGoalsRouter({ controller: createPdGoalsController({ pdGoalsService }), requireAuth }),
+  );
+  app.use(
+    '/api/v1/evaluations',
+    createEvaluationsRouter({ controller: createEvaluationsController({ evaluationsService }), requireAuth }),
   );
 
   // ---- Fallbacks ----
