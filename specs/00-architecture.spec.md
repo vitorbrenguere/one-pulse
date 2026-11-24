@@ -3,7 +3,7 @@
 | Campo | Valor |
 |---|---|
 | Status | ✅ Aprovada |
-| Versão | 1.2.0 (§3.3: `target_date`, parecer do gestor e índice da listagem, via spec 03 E-01..E-03) |
+| Versão | 1.3.0 (§2.1 e §3.4: avaliação em registro único com duas partes, via spec 04 E-01..E-06) · 1.2.0 (§3.3: `target_date`, parecer do gestor e índice da listagem, via spec 03 E-01..E-03) |
 | Data | 2026-11-24 |
 | Escopo | Visão de produto, papéis (RBAC), modelo de dados |
 
@@ -69,11 +69,12 @@ O sistema tem dois papéis, armazenados em `users.role`:
 | **PDI:** ver metas de liderados diretos | ❌ | ✅ |
 | **PDI:** criar meta para um liderado direto | ❌ | ✅ |
 | **PDI:** ver metas de qualquer outro usuário | ❌ | ❌ |
-| **Avaliação:** criar/editar a própria autoavaliação (rascunho) | ✅ | ✅ |
+| **Avaliação:** abrir avaliação (ciclo) de liderado direto | ❌ | ✅ |
+| **Avaliação:** preencher a própria autoavaliação (a avaliação é aberta pelo gestor) | ✅ | ✅ |
 | **Avaliação:** avaliar um liderado direto | ❌ | ✅ |
-| **Avaliação:** ver avaliação do gestor sobre si | ✅ (somente `SUBMETIDA`) | ✅ (somente `SUBMETIDA`) |
-| **Avaliação:** ver autoavaliação de liderado | ❌ | ✅ (somente `SUBMETIDA`) |
-| **Avaliação:** editar após submetida | ❌ | ❌ |
+| **Avaliação:** ver avaliação do gestor sobre si | ✅ (somente `CONCLUIDA`) | ✅ (somente `CONCLUIDA`) |
+| **Avaliação:** ver autoavaliação de liderado | ❌ | ✅ (somente após o envio; rascunho nunca) |
+| **Avaliação:** editar uma parte após enviada | ❌ | ❌ |
 
 ### 2.2 Regras de Autorização (transversais)
 
@@ -93,8 +94,8 @@ erDiagram
   users ||--o{ users : "gerencia (manager_id)"
   users ||--o{ pd_goals : "possui (user_id)"
   users ||--o{ pd_goals : "cria (created_by)"
-  users ||--o{ evaluations : "é avaliado (evaluatee_id)"
-  users ||--o{ evaluations : "avalia (evaluator_id)"
+  users ||--o{ evaluations : "é avaliado (user_id)"
+  users ||--o{ evaluations : "abre e avalia (manager_id)"
 
   users {
     INT id PK
@@ -126,16 +127,16 @@ erDiagram
   }
   evaluations {
     INT id PK
-    INT evaluatee_id FK
-    INT evaluator_id FK
-    VARCHAR cycle
-    ENUM type
+    INT user_id FK
+    INT manager_id FK
+    CHAR cycle
     ENUM status
-    TINYINT score
-    TEXT strengths
-    TEXT improvements
-    TEXT comments
-    DATETIME submitted_at
+    TINYINT self_score
+    TEXT self_comments
+    DATETIME self_submitted_at
+    TINYINT manager_score
+    TEXT manager_feedback
+    DATETIME manager_submitted_at
     DATETIME created_at
     DATETIME updated_at
   }
@@ -189,37 +190,41 @@ Regras completas de ciclo de vida, transições e permissões: [`03-pd-goals.spe
 
 ### 3.4 Tabela `evaluations` (avaliações de desempenho)
 
+Um registro por pessoa por ciclo, com **duas partes independentes**: a autoavaliação (`self_*`) e a avaliação do gestor (`manager_*`). Modelo revisado na v1.3.0 (spec 04 E-01..E-05).
+
 | Coluna | Tipo | Restrições | Observação |
 |---|---|---|---|
 | `id` | `INT UNSIGNED` | PK, `AUTO_INCREMENT` | |
-| `evaluatee_id` | `INT UNSIGNED` | `NOT NULL`, FK → `users.id` `ON DELETE CASCADE` | Quem é avaliado. |
-| `evaluator_id` | `INT UNSIGNED` | `NOT NULL`, FK → `users.id` `ON DELETE RESTRICT` | Quem avalia. |
-| `cycle` | `VARCHAR(7)` | `NOT NULL` | Formato `AAAA-SN` (ex.: `2026-S2`), validado por regex no Zod. |
-| `type` | `ENUM('AUTOAVALIACAO','GESTOR')` | `NOT NULL` | |
-| `status` | `ENUM('RASCUNHO','SUBMETIDA')` | `NOT NULL`, default `'RASCUNHO'` | |
-| `score` | `TINYINT UNSIGNED` | `NULL`, `CHECK (score BETWEEN 1 AND 5)` | Obrigatório para submeter. |
-| `strengths` | `TEXT` | `NULL` | Pontos fortes. |
-| `improvements` | `TEXT` | `NULL` | Pontos de desenvolvimento. |
-| `comments` | `TEXT` | `NULL` | |
-| `submitted_at` | `DATETIME` | `NULL` | |
+| `user_id` | `INT UNSIGNED` | `NOT NULL`, FK → `users.id` `ON DELETE CASCADE` | Quem é avaliado. |
+| `manager_id` | `INT UNSIGNED` | `NOT NULL`, FK → `users.id` `ON DELETE RESTRICT` | Gestor direto que abriu a avaliação (snapshot). |
+| `cycle` | `CHAR(7)` | `NOT NULL` | Formato `AAAA-SN` (ex.: `2026-S2`), validado por regex no Zod. |
+| `status` | `ENUM('ABERTA','CONCLUIDA')` | `NOT NULL`, default `'ABERTA'` | `CONCLUIDA` quando as duas partes foram enviadas. |
+| `self_score` | `TINYINT UNSIGNED` | `NULL`, `CHECK (self_score BETWEEN 1 AND 5)` | Obrigatória para enviar a autoavaliação. |
+| `self_comments` | `TEXT` | `NULL` | Opcional. |
+| `self_submitted_at` | `DATETIME` | `NULL` | Envio da autoavaliação. |
+| `manager_score` | `TINYINT UNSIGNED` | `NULL`, `CHECK (manager_score BETWEEN 1 AND 5)` | Obrigatória para enviar a avaliação do gestor. |
+| `manager_feedback` | `TEXT` | `NULL` | Obrigatório para enviar a avaliação do gestor. |
+| `manager_submitted_at` | `DATETIME` | `NULL` | Envio da avaliação do gestor. |
 | `created_at` / `updated_at` | `DATETIME` | como em `users` | |
 
-Índices: `UNIQUE(evaluatee_id, cycle, type)`, `INDEX(evaluator_id)`.
+Índices: `UNIQUE(user_id, cycle)`, `INDEX(manager_id, cycle)`.
+
+Regras completas de abertura, preenchimento, envio e visibilidade: [`04-evaluations.spec.md`](04-evaluations.spec.md).
 
 **Regras de negócio:**
-- **EVAL-INV-01:** `type = AUTOAVALIACAO` ⇒ `evaluator_id = evaluatee_id`. Validada no **service** (veja a nota 3.5).
-- **EVAL-INV-02:** `type = GESTOR` ⇒ o avaliador é o `manager_id` do avaliado **no momento da criação**.
-- **EVAL-INV-03:** só há uma avaliação de cada tipo por pessoa por ciclo (garantido pelo `UNIQUE`; violação → `409 CONFLICT`).
-- **EVAL-INV-04:** submeter exige `score` preenchido; após `SUBMETIDA` a avaliação é imutável.
+- **EVAL-INV-01:** uma avaliação por pessoa por ciclo (garantido pelo `UNIQUE`; violação → `409 EVALUATION_ALREADY_EXISTS`).
+- **EVAL-INV-02:** `manager_id` é o `users.manager_id` do avaliado **no momento da abertura**, e `manager_id <> user_id`. Validada no **service** (veja a nota 3.5).
+- **EVAL-INV-03:** `status = CONCLUIDA` ⇔ `self_submitted_at` e `manager_submitted_at` preenchidos.
+- **EVAL-INV-04:** enviar a autoavaliação exige `self_score`; enviar a avaliação do gestor exige `manager_score` e `manager_feedback`. Depois de enviada, a parte é imutável.
 
 ### 3.5 Nota: limites de `CHECK` no MySQL 8 (adicionada na v1.1.0)
 
 Validado contra o MySQL 8.0.46 em 2026-11-22:
 
 - **ERROR 3818:** um `CHECK` não pode referenciar uma coluna `AUTO_INCREMENT`. Isso inviabiliza `manager_id <> id`.
-- **ERROR 3823:** um `CHECK` não pode usar uma coluna que participa de FK com ação referencial (`CASCADE`, `SET NULL`). Isso inviabiliza a EVAL-INV-01 sobre `evaluatee_id`.
+- **ERROR 3823:** um `CHECK` não pode usar uma coluna que participa de FK com ação referencial (`CASCADE`, `SET NULL`). Isso inviabiliza um `CHECK (manager_id <> user_id)` em `evaluations` (EVAL-INV-02).
 
-**Decisão:** `CHECK` no banco apenas sobre colunas simples (`progress`, `score`). Invariantes que relacionam IDs ficam no service, com testes unitários dedicados. Os `CHECK`s de `progress` e `score` continuam valendo.
+**Decisão:** `CHECK` no banco apenas sobre colunas simples (`progress`, `self_score`, `manager_score`). Invariantes que relacionam IDs ficam no service, com testes unitários dedicados. Os `CHECK`s de `progress`, `self_score` e `manager_score` continuam valendo.
 
 ---
 
@@ -252,5 +257,5 @@ Validado contra o MySQL 8.0.46 em 2026-11-22:
 | `01-auth.spec.md` | 1 | Login, logout, `/me`, middleware de autenticação e RBAC |
 | `02-users.spec.md` | 2 | Perfil, listagem de liderados |
 | `03-pd-goals.spec.md` | 3 | CRUD de PDI e regras de progresso |
-| `04-evaluations.spec.md` | 4 | Ciclo de avaliação (rascunho → submissão) |
+| `04-evaluations.spec.md` | 4 | Ciclo de avaliação (abertura pelo gestor, duas partes, envio e visibilidade cega) |
 | `05-frontend.spec.md` | 5 | Fluxos de tela, rotas e guards por papel |
