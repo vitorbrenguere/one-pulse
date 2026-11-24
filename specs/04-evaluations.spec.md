@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |---|---|
-| Status | ✅ Aprovada (2026-11-24) |
+| Status | 🏁 Concluída: EVAL-01..40 cobertos, 844 testes verdes na suíte completa (2026-11-24) |
 | Versão | 1.0.0 |
 | Data | 2026-11-24 |
 | Depende de | [`00-architecture.spec.md`](00-architecture.spec.md) v1.3.0 (§2 RBAC, §3.4 `evaluations`, já com as emendas da §5.2; §5 itens 2 e 3) · [`01-auth.spec.md`](01-auth.spec.md) (sessão, envelope de erro) · [`02-users.spec.md`](02-users.spec.md) (`canViewUser`, padrão de 404, `requireRole`) · [`03-pd-goals.spec.md`](03-pd-goals.spec.md) (padrões de schema, ordem de avaliação, `idParam`, `withValidatedQuery`) |
