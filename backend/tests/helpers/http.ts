@@ -43,6 +43,17 @@ export function cookieValue(setCookie: string): string {
   return decodeURIComponent(pair.slice(pair.indexOf('=') + 1));
 }
 
+const SENSITIVE_KEYS = ['password', 'passwordHash', 'password_hash', 'isActive', 'is_active'];
+
+/** Nenhuma chave sensível em nenhum nível, nem hash bcrypt em valores (AUTH-26 / USER-32). */
+export function expectNoSensitiveData(body: unknown, label: string): void {
+  const keys = collectKeysDeep(body);
+  for (const key of SENSITIVE_KEYS) {
+    expect(keys.has(key), `chave proibida "${key}" em ${label}`).toBe(false);
+  }
+  expect(JSON.stringify(body), `hash bcrypt exposto em ${label}`).not.toMatch(/\$2[aby]\$/);
+}
+
 /** Coleta todas as chaves de um JSON, em qualquer nível de profundidade (AUTH-26). */
 export function collectKeysDeep(value: unknown, keys: Set<string> = new Set()): Set<string> {
   if (Array.isArray(value)) {

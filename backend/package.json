@@ -16,7 +16,8 @@
     "test:watch": "vitest",
     "test:unit": "vitest run --project unit",
     "test:integration": "vitest run --project integration",
-    "db:migrate": "tsx --env-file=.env database/migrate.ts"
+    "db:migrate": "tsx --env-file=.env database/migrate.ts",
+    "seed": "tsx --env-file=.env database/seed.ts"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
