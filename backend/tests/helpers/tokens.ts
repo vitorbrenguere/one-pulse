@@ -46,3 +46,8 @@ export function tamperSignature(token: string): string {
 export function authCookie(token: string): string {
   return `${AUTH_COOKIE_NAME}=${token}`;
 }
+
+/** Atalho: header Cookie de sessão válida para um usuário (sem passar pelo /login). */
+export function cookieFor(user: { id: number; role: UserRole }): string {
+  return authCookie(signTestToken({ sub: String(user.id), role: user.role }));
+}

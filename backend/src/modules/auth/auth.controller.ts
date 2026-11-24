@@ -2,7 +2,8 @@ import type { RequestHandler } from 'express';
 import type { Env } from '../../config/env.js';
 import { AUTH_COOKIE_NAME, buildAuthCookieOptions, buildClearAuthCookieOptions } from './auth.cookie.js';
 import type { LoginInput, RegisterInput } from './auth.schemas.js';
-import { unauthenticated, type AuthService } from './auth.service.js';
+import { unauthenticated } from '../../shared/errors/app-error.js';
+import type { AuthService } from './auth.service.js';
 
 type BodyHandler<TBody> = RequestHandler<Record<string, string>, unknown, TBody>;
 

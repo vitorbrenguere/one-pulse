@@ -1,10 +1,14 @@
-import { AppError } from '../../shared/errors/app-error.js';
+import { AppError, unauthenticated } from '../../shared/errors/app-error.js';
 import { toUserDTO } from '../users/user.mapper.js';
-import type { UserDTO, UserRole, UsersRepository } from '../users/user.types.js';
+import type { UserDTO, UserRole, UsersRepository as FullUsersRepository } from '../users/user.types.js';
 import { DuplicateEmailError } from '../users/users.repository.js';
 import type { LoginInput, RegisterInput } from './auth.schemas.js';
 
-export type { UsersRepository } from '../users/user.types.js';
+/**
+ * Porta que o AuthService realmente usa (Interface Segregation): auth não depende de
+ * métodos de equipe ou de perfil, e os fakes de teste implementam só o necessário.
+ */
+export type UsersRepository = Pick<FullUsersRepository, 'findByEmail' | 'findById' | 'create'>;
 
 // ---- Portas (dependências injetadas: permitem testar o service com fakes) ----
 
@@ -51,7 +55,6 @@ export const DEFAULT_DUMMY_PASSWORD_HASH = '$2b$12$7/JVn8tHO3OMcrvlZDSeZeKu9uoWX
 
 const invalidCredentials = () => new AppError(401, 'INVALID_CREDENTIALS', 'E-mail ou senha inválidos.');
 const emailAlreadyInUse = () => new AppError(409, 'EMAIL_ALREADY_IN_USE', 'E-mail já cadastrado.');
-export const unauthenticated = () => new AppError(401, 'UNAUTHENTICATED', 'Autenticação necessária.');
 
 export function createAuthService(deps: AuthServiceDeps): AuthService {
   const { usersRepository, passwordHasher, tokenService } = deps;

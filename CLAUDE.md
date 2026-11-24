@@ -149,6 +149,7 @@ docker compose down -v        # ⚠️ apaga o volume e os dados
 
 ```bash
 npm run db:migrate            # aplica migrations pendentes no onepulse_db
+npm run seed                  # idempotente: 2 gestores + 3 liderados (senha: SEED_USER_PASSWORD)
 npm run dev                   # API em http://localhost:3333 (tsx watch)
 npm test                      # suíte completa (unit + integration; requer o MySQL rodando)
 npm run test:unit             # somente unitários (não precisa do banco)
