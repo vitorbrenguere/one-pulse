@@ -103,6 +103,7 @@ describe('Dashboard do COLABORADOR (spec 05 §6.2)', () => {
     renderApp({ route: '/dashboard', me: C1 });
 
     const region = await findRegion('Minhas avaliações');
+    await within(region).findByText('2º semestre de 2026'); // aguarda a lista carregar
     expect(within(listItemWith(region, '2º semestre de 2026')).getByText('Autoavaliação pendente')).toBeInTheDocument();
     expect(within(listItemWith(region, '1º semestre de 2026')).getByText('Aguardando gestor')).toBeInTheDocument();
     expect(
