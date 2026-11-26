@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |---|---|
-| Status | ✅ Aprovada (v1.0.0) · v1.0.1 aguardando validação |
+| Status | 🏁 Concluída: UI-01..63 cobertos por 143 testes verdes; typecheck, lint e build verdes (2026-11-25) |
 | Versão | 1.0.1 (§6.6: textos e estrutura acessível fixados pelos testes; §10: helper `goals-store.ts`) |
 | Data | 2026-11-24 |
 | Depende de | [`00-architecture.spec.md`](00-architecture.spec.md) v1.3.0 · [`01-auth.spec.md`](01-auth.spec.md) · [`02-users.spec.md`](02-users.spec.md) · [`03-pd-goals.spec.md`](03-pd-goals.spec.md) · [`04-evaluations.spec.md`](04-evaluations.spec.md) |
@@ -68,9 +68,8 @@ frontend/src/
 ├── App.tsx                      # <AppRoutes />
 ├── routes/
 │   ├── AppRoutes.tsx            # tabela de rotas (§5)
-│   ├── RequireAuth.tsx          # guard: sessão
-│   ├── RequireRole.tsx          # guard: papel
-│   └── PublicOnly.tsx           # guard: /login e /register
+│   ├── guards.tsx               # RequireAuth, PublicOnly, RequireRole
+│   └── NotFoundPage.tsx
 ├── services/
 │   ├── http.ts                  # apiRequest + ApiError (§3.2)
 │   └── query-keys.ts            # fábrica de query keys (§3.4)

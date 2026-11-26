@@ -158,7 +158,15 @@ npm run typecheck             # tsc --noEmit
 npm run build && npm start    # build de produção em dist/
 ```
 
-_(Os comandos de front-end serão adicionados quando o projeto for inicializado.)_
+**Front-end** (dentro de `frontend/`; requer a API rodando em `:3333`):
+
+```bash
+npm run dev                   # http://localhost:5173 (proxy /api → http://localhost:3333)
+npm test                      # Vitest + Testing Library + MSW (não precisa do back-end)
+npm run typecheck             # tsc --noEmit
+npm run lint                  # eslint
+npm run build                 # build de produção em dist/
+```
 
 ## 9. Como a IA deve trabalhar neste repo
 
