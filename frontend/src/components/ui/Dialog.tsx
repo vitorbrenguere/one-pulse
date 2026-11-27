@@ -2,6 +2,7 @@ import { X } from 'lucide-react';
 import { useEffect, useId, useRef, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { Button } from './Button';
+import { SurfaceContext } from './surface';
 
 const FOCUSABLE_PARTS = ['input', 'select', 'textarea', 'button', '[href]', '[tabindex]:not([tabindex="-1"])'];
 const FOCUSABLE = FOCUSABLE_PARTS.join(', ');
@@ -44,16 +45,17 @@ export function Dialog({ title, onClose, children }: DialogProps) {
   }, []);
 
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-zinc-900/40 sm:items-center sm:p-4">
+    <SurfaceContext value="light">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink-900/60 backdrop-blur-sm sm:items-center sm:p-4">
       <div
         ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="flex max-h-full w-full flex-col overflow-y-auto bg-white p-6 shadow-xl sm:max-w-lg sm:rounded-lg"
+        className="flex max-h-full w-full flex-col overflow-y-auto rounded-t-3xl bg-white p-6 shadow-2xl shadow-purple-950/30 sm:max-w-lg sm:rounded-3xl sm:p-8"
       >
-        <div className="mb-4 flex items-start justify-between gap-4">
-          <h2 id={titleId} className="text-lg font-semibold text-zinc-900">
+        <div className="mb-6 flex items-start justify-between gap-4">
+          <h2 id={titleId} className="text-xl font-semibold tracking-tight text-zinc-900">
             {title}
           </h2>
           <Button variant="ghost" size="sm" aria-label="Fechar" onClick={onClose}>
@@ -62,7 +64,8 @@ export function Dialog({ title, onClose, children }: DialogProps) {
         </div>
         {children}
       </div>
-    </div>,
+    </div>
+    </SurfaceContext>,
     document.body,
   );
 }
@@ -79,7 +82,7 @@ interface ConfirmDialogProps {
 export function ConfirmDialog({ title, message, onConfirm, onCancel, pending = false, danger = false }: ConfirmDialogProps) {
   return (
     <Dialog title={title} onClose={onCancel}>
-      <p className="text-sm text-zinc-700">{message}</p>
+      <p className="text-sm text-zinc-600">{message}</p>
       <div className="mt-6 flex justify-end gap-2">
         <Button variant="secondary" onClick={onCancel}>
           Cancelar

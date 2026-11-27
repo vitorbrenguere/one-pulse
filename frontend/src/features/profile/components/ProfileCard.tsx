@@ -77,23 +77,23 @@ export function ProfileCard() {
       {editing ? (
         <ProfileForm user={user} onDone={() => setEditing(false)} />
       ) : (
-        <dl className="grid gap-3 text-sm">
-          <div>
-            <dt className="text-zinc-600">Nome</dt>
-            <dd className="font-medium text-zinc-900">{user.name}</dd>
+        <dl className="flex flex-col divide-y divide-purple-100/70 text-sm">
+          <div className="flex flex-col gap-0.5 pb-3">
+            <dt className="text-xs tracking-wide text-zinc-500 uppercase">Nome</dt>
+            <dd className="font-semibold text-zinc-900">{user.name}</dd>
           </div>
-          <div>
-            <dt className="text-zinc-600">E-mail</dt>
-            <dd className="text-zinc-900">{user.email}</dd>
+          <div className="flex flex-col gap-0.5 py-3">
+            <dt className="text-xs tracking-wide text-zinc-500 uppercase">E-mail</dt>
+            <dd className="break-all text-zinc-900">{user.email}</dd>
           </div>
-          <div>
-            <dt className="text-zinc-600">Cargo</dt>
+          <div className="flex flex-col gap-0.5 py-3">
+            <dt className="text-xs tracking-wide text-zinc-500 uppercase">Cargo</dt>
             <dd className="text-zinc-900">{user.jobTitle ?? 'Cargo não informado'}</dd>
           </div>
-          <div>
-            <dt className="text-zinc-600">Papel</dt>
+          <div className="flex items-center justify-between gap-2 pt-3">
+            <dt className="text-xs tracking-wide text-zinc-500 uppercase">Papel</dt>
             <dd>
-              <Badge>{roleLabel(user.role)}</Badge>
+              <Badge tone="violet">{roleLabel(user.role)}</Badge>
             </dd>
           </div>
         </dl>

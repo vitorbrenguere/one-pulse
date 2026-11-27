@@ -68,9 +68,9 @@ export function LoginPage() {
           {login.isPending ? 'Entrando…' : 'Entrar'}
         </Button>
       </form>
-      <p className="mt-6 text-center text-sm text-zinc-600">
+      <p className="mt-8 text-center text-sm text-zinc-600">
         Ainda não tem conta?{' '}
-        <Link to="/register" className="font-medium text-zinc-900 underline underline-offset-2">
+        <Link to="/register" className="rounded font-semibold text-purple-700 underline underline-offset-4 hover:text-purple-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500">
           Criar conta
         </Link>
       </p>

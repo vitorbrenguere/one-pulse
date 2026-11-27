@@ -16,7 +16,7 @@ export function EvaluationList({ query, viewerId, titleFor, emptyTitle }: Evalua
   if (query.data.length === 0) return <EmptyState title={emptyTitle} />;
 
   return (
-    <div className="grid gap-4">
+    <div className="grid gap-5">
       {query.data.map((evaluation) => (
         <EvaluationCard key={evaluation.id} evaluation={evaluation} viewerId={viewerId} title={titleFor(evaluation)} />
       ))}

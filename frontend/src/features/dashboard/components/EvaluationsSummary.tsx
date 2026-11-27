@@ -1,3 +1,4 @@
+import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Badge } from '../../../components/ui/Badge';
 import { FOCUS_RING } from '../../../components/ui/Button';
@@ -19,8 +20,15 @@ export function EvaluationsSummary() {
     <SectionCard
       title="Minhas avaliações"
       actions={
-        <Link to="/evaluations" className={cn('rounded text-sm font-medium text-zinc-900 underline underline-offset-2', FOCUS_RING)}>
+        <Link
+          to="/evaluations"
+          className={cn(
+            'inline-flex items-center gap-1.5 rounded-full border border-purple-200 px-4 py-2 text-sm font-medium text-ink-800 transition-colors hover:bg-purple-50',
+            FOCUS_RING,
+          )}
+        >
           Ver avaliações
+          <ArrowRight aria-hidden="true" className="size-4" />
         </Link>
       }
     >
@@ -31,11 +39,11 @@ export function EvaluationsSummary() {
       ) : evaluations.data.length === 0 ? (
         <p className="text-sm text-zinc-600">{NO_EVALUATIONS_MESSAGE}</p>
       ) : (
-        <ul className="flex flex-col divide-y divide-zinc-100">
+        <ul className="flex flex-col divide-y divide-purple-100/70">
           {evaluations.data.map((evaluation) => {
             const view = getEvaluationViewState(evaluation, user.id);
             return (
-              <li key={evaluation.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
+              <li key={evaluation.id} className="flex flex-wrap items-center justify-between gap-2 py-3 first:pt-0 last:pb-0">
                 <span className="text-sm font-medium text-zinc-900">{formatCycle(evaluation.cycle)}</span>
                 <Badge tone={view.tone}>{view.label}</Badge>
               </li>

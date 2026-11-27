@@ -1,21 +1,16 @@
+import { ArrowUpRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Badge } from '../../../components/ui/Badge';
-import { FOCUS_RING } from '../../../components/ui/Button';
 import { SectionCard } from '../../../components/ui/Card';
 import { EmptyState, ErrorBanner, LoadingState } from '../../../components/ui/States';
-import { cn } from '../../../lib/cn';
-import type { EvaluationDTO } from '../../../types/api';
 import { useCurrentUser } from '../../auth/useAuth';
 import { useEvaluations } from '../../evaluations/hooks/useEvaluations';
 import { useTeam } from '../../team/hooks/useTeam';
+import { pendingUserIds } from './pending';
 
-/** Liderados com avaliação ABERTA em que a parte do gestor ainda não foi enviada. */
-function pendingUserIds(evaluations: EvaluationDTO[] | undefined, managerId: number): Set<number> {
-  return new Set(
-    (evaluations ?? [])
-      .filter((e) => e.status === 'ABERTA' && e.managerId === managerId && !e.managerSubmittedAt)
-      .map((e) => e.userId),
-  );
+function initials(name: string): string {
+  const parts = name.trim().split(/\s+/);
+  return `${parts[0]?.[0] ?? ''}${parts.length > 1 ? (parts[parts.length - 1]?.[0] ?? '') : ''}`.toUpperCase();
 }
 
 /** Equipe do GESTOR com badge de avaliação pendente (spec 05 §6.2, D-07: uma chamada só de avaliações). */
@@ -26,7 +21,7 @@ export function TeamSection() {
   const pending = pendingUserIds(evaluations.data, user.id);
 
   return (
-    <SectionCard title="Minha equipe">
+    <SectionCard title="Minha equipe" tone="dark">
       {team.isPending ? (
         <LoadingState />
       ) : team.isError ? (
@@ -36,18 +31,40 @@ export function TeamSection() {
       ) : (
         <ul className="grid gap-3 sm:grid-cols-2">
           {team.data.map((member) => (
-            <li key={member.id} className="flex flex-col gap-1 rounded-md border border-zinc-200 p-4">
-              <div className="flex flex-wrap items-center justify-between gap-2">
+            <li
+              key={member.id}
+              className="group relative flex flex-col gap-4 rounded-2xl border border-white/10 bg-white/8 p-5 transition-colors hover:bg-white/12 has-[a:focus-visible]:ring-2 has-[a:focus-visible]:ring-purple-400"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <span
+                  aria-hidden="true"
+                  className="flex size-11 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-purple-400 to-violet-600 text-sm font-semibold"
+                >
+                  {initials(member.name)}
+                </span>
+                <span
+                  aria-hidden="true"
+                  className="flex size-9 items-center justify-center rounded-full bg-purple-600 text-white transition-colors group-hover:bg-purple-500"
+                >
+                  <ArrowUpRight className="size-4" />
+                </span>
+              </div>
+              <div className="flex flex-col gap-1">
+                {/* O `after:` estende a área clicável do link para o card todo, sem um segundo link. */}
                 <Link
                   to={`/team/${member.id}`}
-                  className={cn('rounded font-medium text-zinc-900 underline-offset-2 hover:underline', FOCUS_RING)}
+                  className="font-semibold text-white outline-none after:absolute after:inset-0 after:rounded-2xl"
                 >
                   {member.name}
                 </Link>
-                {pending.has(member.id) && <Badge tone="amber">Avaliação pendente</Badge>}
+                {member.jobTitle && <span className="text-sm text-purple-200">{member.jobTitle}</span>}
+                <span className="truncate text-sm text-purple-300">{member.email}</span>
               </div>
-              {member.jobTitle && <span className="text-sm text-zinc-600">{member.jobTitle}</span>}
-              <span className="text-sm text-zinc-600">{member.email}</span>
+              {pending.has(member.id) && (
+                <div>
+                  <Badge tone="amber">Avaliação pendente</Badge>
+                </div>
+              )}
             </li>
           ))}
         </ul>

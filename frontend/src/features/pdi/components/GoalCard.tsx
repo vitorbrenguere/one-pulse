@@ -29,10 +29,19 @@ export function GoalCard({ goal, mode }: { goal: GoalDTO; mode: GoalViewerMode }
   const canEdit = mode === 'owner' && isOpen(goal);
 
   return (
-    <article aria-labelledby={titleId} className="flex flex-col gap-4 rounded-lg border border-zinc-200 bg-white p-5 shadow-sm">
+    <article
+      aria-labelledby={titleId}
+      className="flex flex-col gap-5 rounded-3xl border border-purple-100/80 bg-white p-6 shadow-xs transition-shadow hover:shadow-md hover:shadow-purple-900/5"
+    >
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="flex flex-col gap-2">
-          <h3 id={titleId} className={cn('font-semibold text-zinc-900', goal.status === 'CANCELADA' && 'line-through')}>
+        <div className="flex flex-col gap-3">
+          <h3
+            id={titleId}
+            className={cn(
+              'text-lg font-semibold tracking-tight text-zinc-900',
+              goal.status === 'CANCELADA' && 'text-zinc-500 line-through',
+            )}
+          >
             {goal.title}
           </h3>
           <div className="flex flex-wrap gap-2">
@@ -55,15 +64,17 @@ export function GoalCard({ goal, mode }: { goal: GoalDTO; mode: GoalViewerMode }
         )}
       </div>
 
-      {goal.description && <p className="whitespace-pre-line text-sm text-zinc-700">{goal.description}</p>}
+      {goal.description && <p className="text-sm leading-relaxed whitespace-pre-line text-zinc-600">{goal.description}</p>}
 
-      <div className="flex flex-col gap-1.5">
-        <div className="flex items-center justify-between text-sm">
-          <span className="flex items-center gap-1.5 text-zinc-600">
-            <CalendarDays aria-hidden="true" className="size-4" />
+      <div className="flex flex-col gap-3 border-t border-purple-100/70 pt-5">
+        <div className="flex items-end justify-between gap-3">
+          <span className="flex items-center gap-2 text-sm text-zinc-600">
+            <span aria-hidden="true" className="flex size-8 items-center justify-center rounded-full bg-purple-50 text-purple-600">
+              <CalendarDays className="size-4" />
+            </span>
             Prazo: {formatDate(goal.targetDate)}
           </span>
-          <span className="font-medium text-zinc-900">{goal.progress}%</span>
+          <span className="text-3xl font-semibold tracking-tight text-zinc-900 tabular-nums">{goal.progress}%</span>
         </div>
         <ProgressBar value={goal.progress} />
       </div>

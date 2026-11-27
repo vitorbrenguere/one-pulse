@@ -22,7 +22,7 @@ export function GoalList({ query, mode, filter, emptyTitle, emptyAction }: GoalL
   if (goals.length === 0) return <EmptyState title="Nenhuma meta com este status." />;
 
   return (
-    <div className="grid gap-4">
+    <div className="grid gap-5 xl:grid-cols-2">
       {goals.map((goal) => (
         <GoalCard key={goal.id} goal={goal} mode={mode} />
       ))}

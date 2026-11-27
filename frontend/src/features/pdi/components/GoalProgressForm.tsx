@@ -67,7 +67,7 @@ export function GoalProgressForm({ goal }: { goal: GoalDTO & { status: 'NAO_INIC
   const confirmation = pendingChanges ? confirmationFor(pendingChanges) : null;
 
   return (
-    <form noValidate onSubmit={onSubmit} className="flex flex-col gap-3 rounded-md bg-zinc-50 p-3">
+    <form noValidate onSubmit={onSubmit} className="flex flex-col gap-4 rounded-2xl bg-canvas p-4">
       {update.isError && <ErrorBanner error={update.error} />}
       <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
         <div className="flex flex-col gap-1.5">
@@ -92,7 +92,7 @@ export function GoalProgressForm({ goal }: { goal: GoalDTO & { status: 'NAO_INIC
             aria-label="Ajustar progresso"
             value={progressValid ? progress : goal.progress}
             onChange={(e) => setProgressText(e.target.value)}
-            className="accent-zinc-900"
+            className="h-2 cursor-pointer accent-purple-600"
           />
         </div>
         <Field label="Status" hint="Concluir ou cancelar é definitivo.">

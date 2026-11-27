@@ -22,9 +22,9 @@ export function ScoreInput({ value, onChange, error, label = 'Nota' }: ScoreInpu
         aria-labelledby={labelId}
         aria-describedby={error ? errorId : undefined}
         aria-invalid={error ? true : undefined}
-        className="flex flex-col gap-1.5"
+        className="flex flex-col gap-2"
       >
-        <span id={labelId} className="text-sm font-medium text-zinc-900">
+        <span id={labelId} className="text-sm font-medium text-zinc-800">
           {label}
         </span>
         <div className="flex gap-2">
@@ -32,9 +32,11 @@ export function ScoreInput({ value, onChange, error, label = 'Nota' }: ScoreInpu
             <label
               key={score}
               className={cn(
-                'flex size-10 cursor-pointer items-center justify-center rounded-md border text-sm font-medium',
-                'has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-zinc-900 has-[:focus-visible]:ring-offset-2',
-                value === score ? 'border-zinc-900 bg-zinc-900 text-white' : 'border-zinc-300 bg-white text-zinc-900',
+                'flex size-11 cursor-pointer items-center justify-center rounded-full border text-sm font-semibold transition-colors',
+                'has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-purple-500 has-[:focus-visible]:ring-offset-2',
+                value === score
+                  ? 'border-ink-800 bg-ink-800 text-white shadow-sm'
+                  : 'border-purple-200 bg-white text-ink-800 hover:bg-purple-50',
               )}
             >
               <input

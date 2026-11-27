@@ -41,22 +41,22 @@ export function GoalsPage() {
             Nova meta
           </Button>
         }
-      />
-
-      <div className="max-w-xs">
-        <Field label="Filtrar por status">
-          {(control) => (
-            <Select {...control} value={status ?? ''} onChange={(e) => setStatus(e.target.value)}>
-              <option value="">Todas</option>
-              {GOAL_STATUSES.map((option) => (
-                <option key={option} value={option}>
-                  {goalStatusLabel(option)}
-                </option>
-              ))}
-            </Select>
-          )}
-        </Field>
-      </div>
+      >
+        <div className="w-full max-w-xs">
+          <Field label="Filtrar por status">
+            {(control) => (
+              <Select {...control} className="rounded-full" value={status ?? ''} onChange={(e) => setStatus(e.target.value)}>
+                <option value="">Todas</option>
+                {GOAL_STATUSES.map((option) => (
+                  <option key={option} value={option}>
+                    {goalStatusLabel(option)}
+                  </option>
+                ))}
+              </Select>
+            )}
+          </Field>
+        </div>
+      </PageHeader>
 
       <GoalList
         query={goals}
